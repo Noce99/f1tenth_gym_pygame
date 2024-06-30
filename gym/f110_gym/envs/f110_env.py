@@ -28,6 +28,7 @@ Author: Hongrui Zheng
 import gym
 from gym import error, spaces, utils
 from gym.utils import seeding
+import pygame
 
 # base classes
 from f110_gym.envs.base_classes import Simulator, Integrator
@@ -47,8 +48,8 @@ from pyglet import gl
 # rendering
 VIDEO_W = 600
 VIDEO_H = 400
-WINDOW_W = 1000
-WINDOW_H = 800
+WINDOW_W = 1800
+WINDOW_H = 1800
 
 class F110Env(gym.Env):
     """
@@ -366,7 +367,8 @@ class F110Env(gym.Env):
         """
         self.sim.update_params(params, agent_idx=index)
 
-    def add_render_callback(self, callback_func):
+    @staticmethod
+    def add_render_callback(callback_func):
         """
         Add extra drawing function to call during rendering.
 
@@ -393,23 +395,12 @@ class F110Env(gym.Env):
         if F110Env.renderer is None:
             # first call, initialize everything
             from f110_gym.envs.rendering_pygame import EnvRenderer
-            # from f110_gym.envs.rendering import EnvRenderer
             F110Env.renderer = EnvRenderer(WINDOW_W, WINDOW_H)
             F110Env.renderer.update_map(self.map_name, self.map_ext)
             
-        F110Env.renderer.update_obs(self.render_obs)
+        F110Env.renderer.update_obs(self.render_obs, F110Env.render_callbacks)
 
-        for render_callback in F110Env.render_callbacks:
-            render_callback(F110Env.renderer)
-
-        quit = F110Env.renderer.check_keys()
-        if quit:
+        should_quit = F110Env.renderer.check_keys()
+        if should_quit:
             exit()
-        # F110Env.renderer.dispatch_events()
-        # F110Env.renderer.on_draw()
-        # F110Env.renderer.flip()
-        # if mode == 'human':
-        #     time.sleep(0.005)
-        # elif mode == 'human_fast':
-        #     pass
 

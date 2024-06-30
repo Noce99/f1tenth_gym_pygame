@@ -7,8 +7,7 @@ from argparse import Namespace
 
 from numba import njit
 
-from pyglet.gl import GL_POINTS
-
+import pygame
 """
 Planner Helpers
 """
@@ -165,20 +164,21 @@ class PurePursuitPlanner:
         """
         update waypoints being drawn by EnvRenderer
         """
-
-        #points = self.waypoints
-
         points = np.vstack((self.waypoints[:, self.conf.wpt_xind], self.waypoints[:, self.conf.wpt_yind])).T
-        
-        scaled_points = 50.*points
 
         for i in range(points.shape[0]):
+            pygame.draw.circle(e.screen,
+                               (0, 255, 0),
+                               e.m_to_pixel_window((points[i, 0], points[i, 1])),
+                               3)
+            """
             if len(self.drawn_waypoints) < points.shape[0]:
                 b = e.batch.add(1, GL_POINTS, None, ('v3f/stream', [scaled_points[i, 0], scaled_points[i, 1], 0.]),
                                 ('c3B/stream', [183, 193, 222]))
                 self.drawn_waypoints.append(b)
             else:
                 self.drawn_waypoints[i].vertices = [scaled_points[i, 0], scaled_points[i, 1], 0.]
+            """
         
     def _get_current_waypoint(self, waypoints, lookahead_distance, position, theta):
         """
@@ -253,26 +253,12 @@ def main():
 
     def render_callback(env_renderer):
         # custom extra drawing function
-
-        e = env_renderer
-
-        # update camera to follow car
-        x = e.cars[0].vertices[::2]
-        y = e.cars[0].vertices[1::2]
-        top, bottom, left, right = max(y), min(y), min(x), max(x)
-        e.score_label.x = left
-        e.score_label.y = top - 700
-        e.left = left - 800
-        e.right = right + 800
-        e.top = top + 800
-        e.bottom = bottom - 800
-
         planner.render_waypoints(env_renderer)
 
-    env = gym.make('f110_gym:f110-v0', map=conf.map_path, map_ext=conf.map_ext, num_agents=1, timestep=0.01, integrator=Integrator.RK4)
+    env = gym.make('f110_gym:f110-v0', map=conf.map_path, map_ext=conf.map_ext, num_agents=1, timestep=0.01,
+                   integrator=Integrator.RK4)
 
-    # UNCOMMENT THE FOLLOWING FOR OPENGL
-    # env.add_render_callback(render_callback)
+    env.add_render_callback(render_callback)
     
     obs, step_reward, done, info = env.reset(np.array([[conf.sx, conf.sy, conf.stheta]]))
     env.render()
@@ -287,6 +273,7 @@ def main():
         env.render(mode='human')
         
     print('Sim elapsed time:', laptime, 'Real elapsed time:', time.time()-start)
+
 
 if __name__ == '__main__':
     main()

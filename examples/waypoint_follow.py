@@ -270,7 +270,9 @@ def main():
         planner.render_waypoints(env_renderer)
 
     env = gym.make('f110_gym:f110-v0', map=conf.map_path, map_ext=conf.map_ext, num_agents=1, timestep=0.01, integrator=Integrator.RK4)
-    env.add_render_callback(render_callback)
+
+    # UNCOMMENT THE FOLLOWING FOR OPENGL
+    # env.add_render_callback(render_callback)
     
     obs, step_reward, done, info = env.reset(np.array([[conf.sx, conf.sy, conf.stheta]]))
     env.render()

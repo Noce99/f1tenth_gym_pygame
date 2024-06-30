@@ -392,7 +392,8 @@ class F110Env(gym.Env):
         
         if F110Env.renderer is None:
             # first call, initialize everything
-            from f110_gym.envs.rendering import EnvRenderer
+            from f110_gym.envs.rendering_pygame import EnvRenderer
+            # from f110_gym.envs.rendering import EnvRenderer
             F110Env.renderer = EnvRenderer(WINDOW_W, WINDOW_H)
             F110Env.renderer.update_map(self.map_name, self.map_ext)
             
@@ -400,11 +401,15 @@ class F110Env(gym.Env):
 
         for render_callback in F110Env.render_callbacks:
             render_callback(F110Env.renderer)
-        
-        F110Env.renderer.dispatch_events()
-        F110Env.renderer.on_draw()
-        F110Env.renderer.flip()
-        if mode == 'human':
-            time.sleep(0.005)
-        elif mode == 'human_fast':
-            pass
+
+        quit = F110Env.renderer.check_keys()
+        if quit:
+            exit()
+        # F110Env.renderer.dispatch_events()
+        # F110Env.renderer.on_draw()
+        # F110Env.renderer.flip()
+        # if mode == 'human':
+        #     time.sleep(0.005)
+        # elif mode == 'human_fast':
+        #     pass
+

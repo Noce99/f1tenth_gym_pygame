@@ -18,8 +18,6 @@ setup(name='f110_gym',
           'numpy==1.22.0',
           'pillow==10.3.0',
           'pygame==2.6.0',
-          'pyglet==1.4.11',
-          'PyOpenGL==3.1.7',
           'PyYAML==6.0.1',
           'scipy==1.10.1',
           'zipp==3.19.2'
